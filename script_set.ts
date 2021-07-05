@@ -28,4 +28,8 @@ export class ScriptSet {
   get length() {
     return this.#scripts.length;
   }
+
+  get scripts() {
+    return this.#scripts;
+  }
 }

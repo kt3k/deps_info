@@ -9,6 +9,7 @@ Deno.test("ScriptCache", async () => {
     redirectedUrl: "https://example.com/script/foo.js",
     contentType: "text/javsacript",
     source: "console.log('foo');",
+    dependencyUrls: [],
   });
 
   // Cache hit
@@ -18,6 +19,7 @@ Deno.test("ScriptCache", async () => {
     redirectedUrl: "https://example.com/script/foo.js",
     contentType: "text/javsacript",
     source: "console.log('foo');",
+    dependencyUrls: [],
   });
 
   // Cache miss

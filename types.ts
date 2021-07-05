@@ -3,4 +3,5 @@ export interface Script {
   redirectedUrl: string;
   contentType: string;
   source: string;
+  dependencyUrls: string[];
 }
