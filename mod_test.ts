@@ -22,6 +22,34 @@ Deno.test("getDependencyScriptSet various file ext", async () => {
 });
 
 Deno.test("getDeps", async () => {
-  const scripts = await getDeps(toUrl("./testdata/foo.ts"));
-  assert(Array.isArray(scripts));
+  let scripts = await getDeps("https://esm.sh/react@17.0.2");
+  scripts = scripts.map((s) => ({ ...s, source: "" }));
+  assertEquals(scripts, [
+    {
+      "url": "https://esm.sh/react@17.0.2",
+      "redirectedUrl": "https://esm.sh/react@17.0.2",
+      "contentType": "application/javascript; charset=utf-8",
+      "source": "",
+      "dependencyUrls": [
+        "https://cdn.esm.sh/v43/react@17.0.2/deno/react.js",
+      ],
+    },
+    {
+      "url": "https://cdn.esm.sh/v43/react@17.0.2/deno/react.js",
+      "redirectedUrl": "https://cdn.esm.sh/v43/react@17.0.2/deno/react.js",
+      "contentType": "application/javascript",
+      "source": "",
+      "dependencyUrls": [
+        "https://cdn.esm.sh/v43/object-assign@4.1.1/deno/object-assign.js",
+      ],
+    },
+    {
+      "url": "https://cdn.esm.sh/v43/object-assign@4.1.1/deno/object-assign.js",
+      "redirectedUrl":
+        "https://cdn.esm.sh/v43/object-assign@4.1.1/deno/object-assign.js",
+      "contentType": "application/javascript",
+      "source": "",
+      "dependencyUrls": [],
+    },
+  ]);
 });
