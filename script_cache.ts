@@ -1,4 +1,5 @@
 import { createHash } from "https://deno.land/std@0.100.0/hash/mod.ts";
+import { ensureDir } from "https://deno.land/std@0.100.0/fs/ensure_dir.ts";
 import { join } from "https://deno.land/std@0.100.0/path/mod.ts";
 import { Script } from "./types.ts";
 
@@ -8,6 +9,10 @@ export class ScriptCache {
   #root: string;
   constructor(cacheRoot: string) {
     this.#root = cacheRoot;
+  }
+
+  async ensureCacheDir(): Promise<void> {
+    await ensureDir(this.#root);
   }
 
   #path(url: string) {
