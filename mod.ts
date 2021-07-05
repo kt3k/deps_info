@@ -149,7 +149,10 @@ export async function getDependencyScriptSet(
   return scriptSet;
 }
 
-export async function getDeps(url: string, cacheRoot = CACHE_ROOT): Promise<Script[]> {
+export async function getDeps(
+  url: string,
+  cacheRoot = CACHE_ROOT,
+): Promise<Script[]> {
   const scriptSet = await getDependencyScriptSet(url, cacheRoot);
   return scriptSet.scripts;
 }

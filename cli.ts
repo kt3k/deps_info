@@ -1,6 +1,6 @@
 import { parse } from "https://deno.land/std@0.100.0/flags/mod.ts";
 import { getDependencyScriptSet, printDependencyGraph } from "./mod.ts";
-import { toFileUrl, resolve } from "https://deno.land/std@0.100.0/path/mod.ts";
+import { resolve, toFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
 
 const NAME = "deps_info";
 const VERSION = "v0.0.1";
@@ -22,7 +22,7 @@ Example:
 
   ${NAME} --json https://esm.sh/react
                Shows the dependencies of the remote script 'https://esm.sh/react' in json format
-`)
+`);
 }
 
 type CliArgs = {
@@ -30,7 +30,7 @@ type CliArgs = {
   version: boolean;
   json: boolean;
   _: string[];
-}
+};
 
 export async function main(args: string[]): Promise<number> {
   const {
@@ -56,13 +56,14 @@ export async function main(args: string[]): Promise<number> {
     return 0;
   }
 
-  let [param] = _
+  let [param] = _;
   if (!param) {
     console.log("Error: The entyrpoint is not given");
     usage();
     return 1;
   }
-  const isUrl = param.startsWith("https://") || param.startsWith("http://") || param.startsWith("file://");
+  const isUrl = param.startsWith("https://") || param.startsWith("http://") ||
+    param.startsWith("file://");
   const input = isUrl ? param : toFileUrl(resolve(param)).href;
 
   if (json) {
