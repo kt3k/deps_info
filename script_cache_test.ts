@@ -23,4 +23,6 @@ Deno.test("ScriptCache", async () => {
   // Cache miss
   script = await cache.get("https://example.com/bar.js");
   assertEquals(script, null);
-})
+
+  await Deno.remove(tmpdir, { recursive: true });
+});

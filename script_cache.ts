@@ -18,13 +18,13 @@ export class ScriptCache {
   }
 
   async get(url: string): Promise<Script | null> {
-    let json: string
+    let json: string;
     try {
-      json = await Deno.readTextFile(this.#path(url))
+      json = await Deno.readTextFile(this.#path(url));
     } catch (e) {
       if (e instanceof Deno.errors.NotFound) {
-	// Cache missed
-	return null;
+        // Cache missed
+        return null;
       }
       throw e;
     }
