@@ -24,15 +24,18 @@ export interface Script {
 }
 ```
 
-`getDeps` doesn't throw even when the script imports a file with unknown media type.
+`getDeps` doesn't throw even when the script imports a file with unknown media
+type.
 
 foo.js
+
 ```
 import "bar.css";
 console.log("foo");
 ```
 
 bar.css
+
 ```
 body {
   margin: 0;

@@ -1,5 +1,9 @@
 import { parse } from "https://deno.land/std@0.100.0/flags/mod.ts";
-import { toUrlIfNotUrl, getDependencyScriptSet, printDependencyGraph } from "./mod.ts";
+import {
+  getDependencyScriptSet,
+  printDependencyGraph,
+  toUrlIfNotUrl,
+} from "./mod.ts";
 
 const NAME = "deps_info";
 const VERSION = "v0.0.1";

@@ -5,7 +5,11 @@ import { ScriptCache } from "./script_cache.ts";
 import { ScriptSet } from "./script_set.ts";
 import { pooledMap } from "https://deno.land/std@0.100.0/async/pool.ts";
 import { gray, green } from "https://deno.land/std@0.100.0/fmt/colors.ts";
-import { fromFileUrl, resolve, toFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
+import {
+  fromFileUrl,
+  resolve,
+  toFileUrl,
+} from "https://deno.land/std@0.100.0/path/mod.ts";
 import {
   isCss,
   isJavaScript,
