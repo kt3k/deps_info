@@ -4,7 +4,7 @@ import type { Script } from "./types.ts";
 import { ScriptCache } from "./script_cache.ts";
 import { ScriptSet } from "./script_set.ts";
 import { pooledMap } from "https://deno.land/std@0.100.0/async/pool.ts";
-import { green } from "https://deno.land/std@0.100.0/fmt/colors.ts";
+import { gray, green } from "https://deno.land/std@0.100.0/fmt/colors.ts";
 import { fromFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
 import {
   isCss,
@@ -14,7 +14,14 @@ import {
   isTypeScript,
 } from "./file_type_util.ts";
 
+export type { Script };
+
 const CACHE_ROOT = "./.deps_info_cache";
+
+function unique<T>(arr: Array<T>): Array<T> {
+  const res = new Set<T>(arr);
+  return Array.from(res);
+}
 
 async function getDependencyUrls(
   redirectedUrl: string,
@@ -23,7 +30,7 @@ async function getDependencyUrls(
   await init;
   const [imports, _exports] = parse(source);
   // deno-lint-ignore no-explicit-any
-  return imports.map((x: any) => new URL(x.n, redirectedUrl).href);
+  return unique(imports.map((x: any) => new URL(x.n, redirectedUrl).href));
 }
 
 function getDependencyUrlsFromJsx(
@@ -75,7 +82,7 @@ async function getLocalScript(url: string): Promise<Script> {
 }
 
 async function getRemoteScript(url: string): Promise<Script> {
-  console.log(green("Download"), url);
+  console.error(green("Download"), url);
   const resp = await fetch(url);
   const redirectedUrl = resp.url;
   const contentType = resp.headers.get("content-type") ?? "unknown";
@@ -118,10 +125,13 @@ async function getScript(url: string, cache: ScriptCache): Promise<Script> {
   throw new Error(`Unsupported scheme: ${url}`);
 }
 
-export async function getDependencyScriptSet(url: string): Promise<ScriptSet> {
+export async function getDependencyScriptSet(
+  url: string,
+  cacheRoot = CACHE_ROOT,
+): Promise<ScriptSet> {
   let urls = [url];
   const scriptSet = new ScriptSet();
-  const cache = new ScriptCache(CACHE_ROOT);
+  const cache = new ScriptCache(cacheRoot);
   await cache.ensureCacheDir();
   while (urls.length > 0) {
     const nextUrls = [] as string[];
@@ -137,4 +147,64 @@ export async function getDependencyScriptSet(url: string): Promise<ScriptSet> {
     urls = nextUrls;
   }
   return scriptSet;
+}
+
+export async function getDeps(url: string, cacheRoot = CACHE_ROOT): Promise<Script[]> {
+  const scriptSet = await getDependencyScriptSet(url, cacheRoot);
+  return scriptSet.scripts;
+}
+
+const SIBLING_CONNECTOR = "├";
+const LAST_SIBLING_CONNECTOR = "└";
+const CHILD_DEPS_CONNECTOR = "┬";
+const CHILD_NO_DEPS_CONNECTOR = "─";
+const VERTICAL_CONNECTOR = "│";
+const EMPTY_CONNECTOR = " ";
+
+/**
+ * Prints the dependency graph recursively.
+ *
+ * @param url The url to start
+ * @param scriptSet The script set which must contain all dependencies of the url
+ * @param prefix to add before printing each line. undefined means that's the root of the tree.
+ * @param isLast true when the item is the last among siblings
+ * @param printed The items already printed
+ */
+export function printDependencyGraph(
+  url: string,
+  scriptSet: ScriptSet,
+  prefix?: string,
+  isLast = true,
+  printed: Set<string> = new Set([]),
+) {
+  const dependencyUrls = scriptSet.get(url)!.dependencyUrls;
+  const noDeps = dependencyUrls.length === 0;
+  const seen = printed.has(url);
+  const childConnector = (noDeps || seen)
+    ? CHILD_NO_DEPS_CONNECTOR
+    : CHILD_DEPS_CONNECTOR;
+  const siblingConnector =
+    (isLast ? LAST_SIBLING_CONNECTOR : SIBLING_CONNECTOR);
+  const prepend = prefix === undefined
+    ? ""
+    : gray(prefix + siblingConnector + "─" + childConnector + " ");
+  if (seen) {
+    console.log(prepend + gray(url));
+    return;
+  }
+  console.log(prepend + url);
+  printed.add(url);
+  let len = dependencyUrls.length;
+  for (const u of dependencyUrls) {
+    len--;
+    printDependencyGraph(
+      u,
+      scriptSet,
+      prefix === undefined
+        ? ""
+        : prefix + (isLast ? EMPTY_CONNECTOR : VERTICAL_CONNECTOR) + " ",
+      len === 0,
+      printed,
+    );
+  }
 }

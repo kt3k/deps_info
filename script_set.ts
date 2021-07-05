@@ -2,10 +2,10 @@ import { Script } from "./types.ts";
 
 export class ScriptSet {
   #scripts: Script[];
-  #urls: Set<string>;
+  #map: Map<string, Script>;
   constructor(scripts?: Script[]) {
     this.#scripts = [];
-    this.#urls = new Set();
+    this.#map = new Map();
     if (scripts) {
       for (const s of scripts) {
         this.add(s);
@@ -18,11 +18,15 @@ export class ScriptSet {
       return;
     }
     this.#scripts.push(script);
-    this.#urls.add(script.url);
+    this.#map.set(script.url, script);
   }
 
   has(url: string): boolean {
-    return this.#urls.has(url);
+    return this.#map.has(url);
+  }
+
+  get(url: string): Script | undefined {
+    return this.#map.get(url);
   }
 
   get length() {

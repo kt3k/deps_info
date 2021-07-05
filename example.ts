@@ -1,14 +1,11 @@
-import { getDependencyScriptSet } from "./mod.ts";
-import { resolve, toFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
+import { getDependencyScriptSet, printDependencyGraph } from "./mod.ts";
 
-const r = (p: string) => toFileUrl(resolve(p)).href;
 try {
-  // const scriptSet = await getDependencyScriptSet(r("./testdata/foo.ts"));
-  const scriptSet = await getDependencyScriptSet(
-    "https://jspm.dev/jsdom@16.6.0",
-  );
+  const url = "https://jspm.dev/jsdom@16.6.0";
+  const scriptSet = await getDependencyScriptSet(url);
   console.log(scriptSet.scripts);
   console.log(scriptSet.length);
+  printDependencyGraph(url, scriptSet);
 } catch (e) {
   console.log(e);
   console.log(e.errors);
