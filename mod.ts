@@ -5,7 +5,7 @@ import { ScriptCache } from "./script_cache.ts";
 import { ScriptSet } from "./script_set.ts";
 import { pooledMap } from "https://deno.land/std@0.100.0/async/pool.ts";
 import { gray, green } from "https://deno.land/std@0.100.0/fmt/colors.ts";
-import { fromFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
+import { fromFileUrl, resolve, toFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
 import {
   isCss,
   isJavaScript,
@@ -149,10 +149,17 @@ export async function getDependencyScriptSet(
   return scriptSet;
 }
 
+export function toUrlIfNotUrl(param: string): string {
+  const isUrl = param.startsWith("https://") || param.startsWith("http://") ||
+    param.startsWith("file://");
+  return isUrl ? param : toFileUrl(resolve(param)).href;
+}
+
 export async function getDeps(
-  url: string,
+  urlOrPath: string,
   cacheRoot = CACHE_ROOT,
 ): Promise<Script[]> {
+  const url = toUrlIfNotUrl(urlOrPath);
   const scriptSet = await getDependencyScriptSet(url, cacheRoot);
   return scriptSet.scripts;
 }

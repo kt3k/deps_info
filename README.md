@@ -24,6 +24,45 @@ export interface Script {
 }
 ```
 
+`getDeps` doesn't throw even when the script imports a file with unknown media type.
+
+foo.js
+```
+import "bar.css";
+console.log("foo");
+```
+
+bar.css
+```
+body {
+  margin: 0;
+}
+```
+
+```ts
+await getDeps("./foo.js");
+/* This returns:
+[
+  {
+    "url": "file:///Users/kt3k/oss/deps_info/foo.js",
+    "redirectedUrl": "file:///Users/kt3k/oss/deps_info/foo.js",
+    "contentType": "text/javascript",
+    "source": "import \"./bar.css\";\nconsole.log(\"foo\");\n",
+    "dependencyUrls": [
+      "file:///Users/kt3k/oss/deps_info/bar.css"
+    ]
+  },
+  {
+    "url": "file:///Users/kt3k/oss/deps_info/bar.css",
+    "redirectedUrl": "file:///Users/kt3k/oss/deps_info/bar.css",
+    "contentType": "text/css",
+    "source": "body {\n  margin: 0;\n}\n",
+    "dependencyUrls": []
+  }
+]
+*/
+```
+
 # CLI
 
 The command below installs the cli version of this tool.

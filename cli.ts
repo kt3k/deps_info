@@ -1,6 +1,5 @@
 import { parse } from "https://deno.land/std@0.100.0/flags/mod.ts";
-import { getDependencyScriptSet, printDependencyGraph } from "./mod.ts";
-import { resolve, toFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
+import { toUrlIfNotUrl, getDependencyScriptSet, printDependencyGraph } from "./mod.ts";
 
 const NAME = "deps_info";
 const VERSION = "v0.0.1";
@@ -62,9 +61,7 @@ export async function main(args: string[]): Promise<number> {
     usage();
     return 1;
   }
-  const isUrl = param.startsWith("https://") || param.startsWith("http://") ||
-    param.startsWith("file://");
-  const input = isUrl ? param : toFileUrl(resolve(param)).href;
+  const input = toUrlIfNotUrl(param);
 
   if (json) {
     await showInfoJson(input);
