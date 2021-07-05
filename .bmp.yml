@@ -2,3 +2,4 @@ version: 0.0.1
 commit: 'chore: bump to v%.%.%'
 files:
   README.md: deps_info v%.%.%
+  cli.ts: v%.%.%
