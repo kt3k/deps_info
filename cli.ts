@@ -59,7 +59,7 @@ export async function main(args: string[]): Promise<number> {
     return 0;
   }
 
-  let [param] = _;
+  const [param] = _;
   if (!param) {
     console.log("Error: The entyrpoint is not given");
     usage();
