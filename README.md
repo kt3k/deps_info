@@ -71,7 +71,10 @@ await getDeps("./foo.js");
 donwloaded files. You can change this by passing it as the 2nd argument.
 
 ```ts
-const scripts = await getDeps("https://jspm.dev/jsdom", "/path/to/cache/directory");
+const scripts = await getDeps(
+  "https://jspm.dev/jsdom",
+  "/path/to/cache/directory",
+);
 ```
 
 # CLI
