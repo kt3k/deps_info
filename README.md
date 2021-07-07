@@ -1,6 +1,7 @@
 # deps_info v0.0.1
 
-> An alternative to `deno info`, supports non-standard file imports, such as .css, .svg, etc
+> An alternative to `deno info`, supports non-standard file imports, such as
+> .css, .svg, etc
 
 # APIs
 
@@ -66,8 +67,8 @@ await getDeps("./foo.js");
 */
 ```
 
-`getDeps` uses `./.deps_info_cache` by default as the cache directory for donwloaded files. You can change this
-by passing it as the 2nd argument.
+`getDeps` uses `./.deps_info_cache` by default as the cache directory for
+donwloaded files. You can change this by passing it as the 2nd argument.
 
 ```
 const scripts = await getDeps("https://jspm.dev/jsdom", "/path/to/cache/directory");
