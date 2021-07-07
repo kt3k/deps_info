@@ -30,7 +30,7 @@ type.
 
 foo.js
 
-```
+```js
 import "bar.css";
 console.log("foo");
 ```
@@ -70,7 +70,7 @@ await getDeps("./foo.js");
 `getDeps` uses `./.deps_info_cache` by default as the cache directory for
 donwloaded files. You can change this by passing it as the 2nd argument.
 
-```
+```ts
 const scripts = await getDeps("https://jspm.dev/jsdom", "/path/to/cache/directory");
 ```
 
