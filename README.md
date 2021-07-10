@@ -28,7 +28,14 @@ class ScriptSet
 ```
 
 You can load further dependency scripts by calling
-`scriptSet.loadDeps("https://path/to/script")`.
+`scriptSet.loadDeps(url)`.
+
+```ts
+const scriptSet = await getDeps("https://jspm.dev/jsdom");
+await scriptSet.loadDeps("https://esm.sh/react");
+await scriptSet.loadDeps("https://esm.sh/react-dom");
+...
+```
 
 In the above APIs, `Script` has the shape below:
 
