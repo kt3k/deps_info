@@ -2,7 +2,7 @@ import { parse } from "https://deno.land/std@0.100.0/flags/mod.ts";
 import { getDeps, printDependencyGraph } from "./mod.ts";
 
 const NAME = "deps_info";
-const VERSION = "v0.1.1";
+const VERSION = "v0.2.0";
 
 function usage() {
   console.log(`Usage: ${NAME} <entrypoint>
