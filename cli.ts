@@ -1,9 +1,5 @@
 import { parse } from "https://deno.land/std@0.100.0/flags/mod.ts";
-import {
-  getDependencyScriptSet,
-  printDependencyGraph,
-  toUrlIfNotUrl,
-} from "./mod.ts";
+import { getDeps, printDependencyGraph } from "./mod.ts";
 
 const NAME = "deps_info";
 const VERSION = "v0.1.1";
@@ -59,29 +55,28 @@ export async function main(args: string[]): Promise<number> {
     return 0;
   }
 
-  const [param] = _;
-  if (!param) {
+  const [url] = _;
+  if (!url) {
     console.log("Error: The entyrpoint is not given");
     usage();
     return 1;
   }
-  const input = toUrlIfNotUrl(param);
 
   if (json) {
-    await showInfoJson(input);
+    await showInfoJson(url);
   } else {
-    await showInfo(input);
+    await showInfo(url);
   }
   return 0;
 }
 
 async function showInfo(url: string) {
-  const scriptSet = await getDependencyScriptSet(url);
+  const scriptSet = await getDeps(url);
   printDependencyGraph(url, scriptSet);
 }
 
 async function showInfoJson(url: string) {
-  const scriptSet = await getDependencyScriptSet(url);
+  const scriptSet = await getDeps(url);
   console.log(JSON.stringify(scriptSet.scripts, null, 2));
 }
 

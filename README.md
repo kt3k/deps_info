@@ -5,15 +5,32 @@
 
 # APIs
 
-## getDeps
+## `getDeps(url: string, cacheRoot: string): Promise<ScriptSet>`
 
 ```ts
 import { getDeps } from "https://deno.land/x/deps_info@v0.1.1/mod.ts";
 
-const scripts = await getDeps("https://jspm.dev/jsdom");
+const scriptSet = await getDeps("https://jspm.dev/jsdom");
 ```
 
-`scripts` has the type of `Script[]`, where `Script` has the shape below:
+## ScriptSet
+
+ScriptSet has the following methods.
+
+```
+class ScriptSet
+  add(script: Script)
+  has(url: string): boolean
+  get(url: string): Script | undefined
+  get length()
+  get scripts()
+  async loadDeps(url: string): Promise<void>
+```
+
+You can load further dependency scripts by calling
+`scriptSet.loadDeps("https://path/to/script")`.
+
+In the above APIs, `Script` has the shape below:
 
 ```ts
 export interface Script {
@@ -25,7 +42,7 @@ export interface Script {
 }
 ```
 
-`getDeps` doesn't throw even when the script imports a file with unknown media
+This module doesn't throw even when the script imports a file with unknown media
 type.
 
 foo.js
@@ -44,7 +61,7 @@ body {
 ```
 
 ```ts
-await getDeps("./foo.js");
+(await getDeps("./foo.js")).scripts;
 /* This returns:
 [
   {

@@ -1,65 +1,19 @@
 import type { Script } from "./types.ts";
-import { ScriptCache } from "./script_cache.ts";
-import { ScriptSet } from "./script_set.ts";
-import { getScript } from "./get_script.ts";
-import { pooledMap } from "https://deno.land/std@0.100.0/async/pool.ts";
+import { ScriptSet, toUrlIfNotUrl } from "./script_set.ts";
 import { gray } from "https://deno.land/std@0.100.0/fmt/colors.ts";
-import {
-  resolve,
-  toFileUrl,
-} from "https://deno.land/std@0.100.0/path/mod.ts";
 
 export type { Script };
-export { ScriptSet };
+export { ScriptSet, toUrlIfNotUrl };
 
 const CACHE_ROOT = "./.deps_info_cache";
-
-export async function getDependencies(
-  scriptSet: ScriptSet,
-  url: string,
-  cache: ScriptCache,
-): Promise<void> {
-  let urls = [url];
-  await cache.ensureCacheDir();
-  while (urls.length > 0) {
-    const nextUrls = [] as string[];
-    urls = urls.filter((u) => !scriptSet.has(u));
-    const result = pooledMap(12, urls, async (url: string) => {
-      const script = await getScript(url, cache);
-      scriptSet.add(script);
-      return script;
-    });
-    for await (const script of result) {
-      nextUrls.push(...script.dependencyUrls);
-    }
-    urls = nextUrls;
-  }
-}
-
-export async function getDependencyScriptSet(
-  url: string,
-  cacheRoot = CACHE_ROOT,
-): Promise<ScriptSet> {
-  const scriptSet = new ScriptSet();
-  const cache = new ScriptCache(cacheRoot);
-  await cache.ensureCacheDir();
-  await getDependencies(scriptSet, url, cache);
-  return scriptSet;
-}
-
-export function toUrlIfNotUrl(param: string): string {
-  const isUrl = param.startsWith("https://") || param.startsWith("http://") ||
-    param.startsWith("file://");
-  return isUrl ? param : toFileUrl(resolve(param)).href;
-}
 
 export async function getDeps(
   urlOrPath: string,
   cacheRoot = CACHE_ROOT,
-): Promise<Script[]> {
-  const url = toUrlIfNotUrl(urlOrPath);
-  const scriptSet = await getDependencyScriptSet(url, cacheRoot);
-  return scriptSet.scripts;
+): Promise<ScriptSet> {
+  const scriptSet = new ScriptSet([], cacheRoot);
+  await scriptSet.loadDeps(urlOrPath);
+  return scriptSet;
 }
 
 const SIBLING_CONNECTOR = "├";

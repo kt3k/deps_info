@@ -3,9 +3,7 @@ import { init, parse } from "https://unpkg.com/es-module-lexer/dist/lexer.js";
 import type { Script } from "./types.ts";
 import { ScriptCache } from "./script_cache.ts";
 import { green } from "https://deno.land/std@0.100.0/fmt/colors.ts";
-import {
-  fromFileUrl,
-} from "https://deno.land/std@0.100.0/path/mod.ts";
+import { fromFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
 import {
   isCss,
   isJavaScript,
@@ -109,7 +107,10 @@ async function getRemoteScript(url: string): Promise<Script> {
 /**
  * Gets the script from the original source without using any cache.
  */
-export async function getScript(url: string, cache: ScriptCache): Promise<Script> {
+export async function getScript(
+  url: string,
+  cache: ScriptCache,
+): Promise<Script> {
   if (url.startsWith("file://")) {
     return getLocalScript(url);
   }
