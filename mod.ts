@@ -19,6 +19,7 @@ import {
 } from "./file_type_util.ts";
 
 export type { Script };
+export { ScriptSet };
 
 const CACHE_ROOT = "./.deps_info_cache";
 
@@ -129,13 +130,12 @@ async function getScript(url: string, cache: ScriptCache): Promise<Script> {
   throw new Error(`Unsupported scheme: ${url}`);
 }
 
-export async function getDependencyScriptSet(
+export async function getDependencies(
+  scriptSet: ScriptSet,
   url: string,
-  cacheRoot = CACHE_ROOT,
-): Promise<ScriptSet> {
+  cache: ScriptCache,
+): Promise<void> {
   let urls = [url];
-  const scriptSet = new ScriptSet();
-  const cache = new ScriptCache(cacheRoot);
   await cache.ensureCacheDir();
   while (urls.length > 0) {
     const nextUrls = [] as string[];
@@ -150,6 +150,16 @@ export async function getDependencyScriptSet(
     }
     urls = nextUrls;
   }
+}
+
+export async function getDependencyScriptSet(
+  url: string,
+  cacheRoot = CACHE_ROOT,
+): Promise<ScriptSet> {
+  const scriptSet = new ScriptSet();
+  const cache = new ScriptCache(cacheRoot);
+  await cache.ensureCacheDir();
+  await getDependencies(scriptSet, url, cache);
   return scriptSet;
 }
 
