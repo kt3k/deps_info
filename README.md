@@ -1,4 +1,4 @@
-# deps_info v0.1.0
+# deps_info v0.1.1
 
 > An alternative to `deno info`, supports non-standard file imports, such as
 > .css, .svg, etc
@@ -8,7 +8,7 @@
 ## getDeps
 
 ```ts
-import { getDeps } from "https://raw.githubusercontent.com/kt3k/deps_info/main/mod.ts";
+import { getDeps } from "https://deno.land/x/deps_info@v0.1.1/mod.ts";
 
 const scripts = await getDeps("https://jspm.dev/jsdom");
 ```
@@ -82,7 +82,7 @@ const scripts = await getDeps(
 The command below installs the cli version of this tool.
 
 ```
-deno install -qf --allow-read --allow-write=. --allow-net --name deps_info https://raw.githubusercontent.com/kt3k/deps_info/main/cli.ts
+deno install -qf --allow-read --allow-write=. --allow-net --name deps_info https://deno.land/x/deps_info@v0.1.1/cli.ts
 ```
 
 You can show the dependencies in tree format in the terminal.
