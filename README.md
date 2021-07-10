@@ -1,4 +1,4 @@
-# deps_info v0.0.1
+# deps_info v0.1.0
 
 > An alternative to `deno info`, supports non-standard file imports, such as
 > .css, .svg, etc

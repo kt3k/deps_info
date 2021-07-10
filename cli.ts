@@ -6,7 +6,7 @@ import {
 } from "./mod.ts";
 
 const NAME = "deps_info";
-const VERSION = "v0.0.1";
+const VERSION = "v0.1.0";
 
 function usage() {
   console.log(`Usage: ${NAME} <entrypoint>
