@@ -27,8 +27,7 @@ class ScriptSet
   async loadDeps(url: string): Promise<void>
 ```
 
-You can load further dependency scripts by calling
-`scriptSet.loadDeps(url)`.
+You can load further dependency scripts by calling `scriptSet.loadDeps(url)`.
 
 ```ts
 const scriptSet = await getDeps("https://jspm.dev/jsdom");
