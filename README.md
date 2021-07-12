@@ -44,7 +44,7 @@ export interface Script {
   redirectedUrl: string;
   contentType: string;
   source: string;
-  dependencyUrls: string[];
+  imports: string[];
 }
 ```
 
@@ -75,7 +75,7 @@ body {
     "redirectedUrl": "file:///Users/kt3k/oss/deps_info/foo.js",
     "contentType": "text/javascript",
     "source": "import \"./bar.css\";\nconsole.log(\"foo\");\n",
-    "dependencyUrls": [
+    "imports": [
       "file:///Users/kt3k/oss/deps_info/bar.css"
     ]
   },
@@ -84,7 +84,7 @@ body {
     "redirectedUrl": "file:///Users/kt3k/oss/deps_info/bar.css",
     "contentType": "text/css",
     "source": "body {\n  margin: 0;\n}\n",
-    "dependencyUrls": []
+    "imports": []
   }
 ]
 */

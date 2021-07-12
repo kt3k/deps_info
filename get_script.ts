@@ -19,7 +19,7 @@ function unique<T>(arr: Array<T>): Array<T> {
   return Array.from(res);
 }
 
-async function getDependencyUrls(
+async function getImports(
   redirectedUrl: string,
   source: string,
 ): Promise<string[]> {
@@ -29,21 +29,21 @@ async function getDependencyUrls(
   return unique(imports.map((x: any) => new URL(x.n, redirectedUrl).href));
 }
 
-function getDependencyUrlsFromJsx(
+function getImportsFromJsx(
   redirectedUrl: string,
   source: string,
 ): Promise<string[]> {
-  return getDependencyUrls(
+  return getImports(
     redirectedUrl,
     transform(source, { transforms: ["jsx"] }).code,
   );
 }
 
-function getDependencyUrlsFromTsx(
+function getImportsFromTsx(
   redirectedUrl: string,
   source: string,
 ): Promise<string[]> {
-  return getDependencyUrls(
+  return getImports(
     redirectedUrl,
     transform(source, { transforms: ["typescript", "jsx"] }).code,
   );
@@ -51,20 +51,20 @@ function getDependencyUrlsFromTsx(
 
 async function getLocalScript(url: string): Promise<Script> {
   const source = await Deno.readTextFile(fromFileUrl(url));
-  let dependencyUrls: string[] = [];
+  let imports: string[] = [];
   let contentType = "text/plain";
   if (isJavaScript(null, url)) {
     contentType = "text/javascript";
-    dependencyUrls = await getDependencyUrls(url, source);
+    imports = await getImports(url, source);
   } else if (isTypeScript(null, url)) {
     contentType = "application/typescript";
-    dependencyUrls = await getDependencyUrls(url, source);
+    imports = await getImports(url, source);
   } else if (isJsx(null, url)) {
     contentType = "text/jsx";
-    dependencyUrls = await getDependencyUrlsFromJsx(url, source);
+    imports = await getImportsFromJsx(url, source);
   } else if (isTsx(null, url)) {
     contentType = "text/tsx";
-    dependencyUrls = await getDependencyUrlsFromTsx(url, source);
+    imports = await getImportsFromTsx(url, source);
   } else if (isCss(null, url)) {
     contentType = "text/css";
   }
@@ -73,7 +73,7 @@ async function getLocalScript(url: string): Promise<Script> {
     redirectedUrl: url,
     contentType,
     source,
-    dependencyUrls,
+    imports,
   };
 }
 
@@ -83,24 +83,24 @@ async function getRemoteScript(url: string): Promise<Script> {
   const redirectedUrl = resp.url;
   const contentType = resp.headers.get("content-type") ?? "unknown";
   const source = await resp.text();
-  let dependencyUrls = [] as string[];
+  let imports = [] as string[];
   if (isJavaScript(contentType, url)) {
-    dependencyUrls = await getDependencyUrls(redirectedUrl, source);
+    imports = await getImports(redirectedUrl, source);
   } else if (isTypeScript(contentType, url)) {
-    dependencyUrls = await getDependencyUrls(redirectedUrl, source);
+    imports = await getImports(redirectedUrl, source);
   } else if (isTsx(contentType, url)) {
-    dependencyUrls = await getDependencyUrlsFromTsx(redirectedUrl, source);
+    imports = await getImportsFromTsx(redirectedUrl, source);
   } else if (isJsx(contentType, url)) {
-    dependencyUrls = await getDependencyUrlsFromJsx(redirectedUrl, source);
+    imports = await getImportsFromJsx(redirectedUrl, source);
   } else if (isCss(contentType, url)) {
-    dependencyUrls = [];
+    imports = [];
   }
   return {
     url,
     redirectedUrl: resp.url,
     contentType,
     source,
-    dependencyUrls,
+    imports,
   };
 }
 

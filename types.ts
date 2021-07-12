@@ -10,6 +10,6 @@ export interface Script {
   contentType: string;
   /** The source code of the script */
   source: string;
-  /** The dependency Urls */
-  dependencyUrls: string[];
+  /** The dependency import specifiers */
+  imports: string[];
 }

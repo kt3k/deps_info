@@ -67,7 +67,7 @@ export class ScriptSet {
         return script;
       });
       for await (const script of result) {
-        nextUrls.push(...script.dependencyUrls);
+        nextUrls.push(...script.imports);
       }
       urls = nextUrls;
     }

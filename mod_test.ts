@@ -30,7 +30,7 @@ Deno.test("getDeps", async () => {
       "redirectedUrl": "https://esm.sh/react@17.0.2",
       "contentType": "application/javascript; charset=utf-8",
       "source": "",
-      "dependencyUrls": [
+      "imports": [
         "https://cdn.esm.sh/v43/react@17.0.2/deno/react.js",
       ],
     },
@@ -39,7 +39,7 @@ Deno.test("getDeps", async () => {
       "redirectedUrl": "https://cdn.esm.sh/v43/react@17.0.2/deno/react.js",
       "contentType": "application/javascript",
       "source": "",
-      "dependencyUrls": [
+      "imports": [
         "https://cdn.esm.sh/v43/object-assign@4.1.1/deno/object-assign.js",
       ],
     },
@@ -49,7 +49,7 @@ Deno.test("getDeps", async () => {
         "https://cdn.esm.sh/v43/object-assign@4.1.1/deno/object-assign.js",
       "contentType": "application/javascript",
       "source": "",
-      "dependencyUrls": [],
+      "imports": [],
     },
   ]);
 });

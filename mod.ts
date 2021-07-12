@@ -39,8 +39,8 @@ export function printDependencyGraph(
   isLast = true,
   printed: Set<string> = new Set([]),
 ) {
-  const dependencyUrls = scriptSet.get(url)!.dependencyUrls;
-  const noDeps = dependencyUrls.length === 0;
+  const imports = scriptSet.get(url)!.imports;
+  const noDeps = imports.length === 0;
   const seen = printed.has(url);
   const childConnector = (noDeps || seen)
     ? CHILD_NO_DEPS_CONNECTOR
@@ -56,8 +56,8 @@ export function printDependencyGraph(
   }
   console.log(prepend + url);
   printed.add(url);
-  let len = dependencyUrls.length;
-  for (const u of dependencyUrls) {
+  let len = imports.length;
+  for (const u of imports) {
     len--;
     printDependencyGraph(
       u,
