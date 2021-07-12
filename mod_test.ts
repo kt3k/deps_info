@@ -40,7 +40,7 @@ Deno.test("getDeps", async () => {
       "contentType": "application/javascript",
       "source": "",
       "imports": [
-        "https://cdn.esm.sh/v43/object-assign@4.1.1/deno/object-assign.js",
+        "/v43/object-assign@4.1.1/deno/object-assign.js",
       ],
     },
     {
