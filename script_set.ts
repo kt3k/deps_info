@@ -3,6 +3,7 @@ import { ScriptCache } from "./script_cache.ts";
 import { getScript } from "./get_script.ts";
 import { pooledMap } from "https://deno.land/std@0.100.0/async/pool.ts";
 import { resolve, toFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
+import { ParsedImportMap, resolve as resolveImportMap } from "https://esm.sh/@import-maps/resolve@1.0.1";
 
 /** ScriptSet represents the set of the scripts.
  * This class provides loadDeps method which downloads all the dependency scripts
@@ -11,10 +12,12 @@ export class ScriptSet {
   #scripts: Script[];
   #map: Map<string, Script>;
   #cache: ScriptCache;
-  constructor(scripts?: Script[], cacheRoot = "./.deps_info_cache") {
+  #parsedImportMap?: ParsedImportMap;
+  constructor(scripts?: Script[], cacheRoot = "./.deps_info_cache", parsedImportMap?: ParsedImportMap) {
     this.#scripts = [];
     this.#map = new Map();
     this.#cache = new ScriptCache(cacheRoot);
+    this.#parsedImportMap = parsedImportMap;
     if (scripts) {
       for (const s of scripts) {
         this.add(s);
@@ -67,7 +70,14 @@ export class ScriptSet {
         return script;
       });
       for await (const script of result) {
-        nextUrls.push(...script.imports);
+        const pim = this.#parsedImportMap;
+        if (pim) {
+          nextUrls.push(...script.imports.map((i) =>
+            resolveImportMap(i, pim, new URL(script.redirectedUrl)).resolvedImport.href
+          ));
+        } else {
+          nextUrls.push(...script.imports.map((i) => new URL(i, script.redirectedUrl).href));
+        }
       }
       urls = nextUrls;
     }

@@ -20,31 +20,27 @@ function unique<T>(arr: Array<T>): Array<T> {
 }
 
 async function getImports(
-  redirectedUrl: string,
   source: string,
 ): Promise<string[]> {
   await init;
   const [imports, _exports] = parse(source);
+  // return unique(imports.map((x: any) => new URL(x.n, redirectedUrl).href));
   // deno-lint-ignore no-explicit-any
-  return unique(imports.map((x: any) => new URL(x.n, redirectedUrl).href));
+  return unique(imports.map((x: any) => x.n));
 }
 
 function getImportsFromJsx(
-  redirectedUrl: string,
   source: string,
 ): Promise<string[]> {
   return getImports(
-    redirectedUrl,
     transform(source, { transforms: ["jsx"] }).code,
   );
 }
 
 function getImportsFromTsx(
-  redirectedUrl: string,
   source: string,
 ): Promise<string[]> {
   return getImports(
-    redirectedUrl,
     transform(source, { transforms: ["typescript", "jsx"] }).code,
   );
 }
@@ -55,16 +51,16 @@ async function getLocalScript(url: string): Promise<Script> {
   let contentType = "text/plain";
   if (isJavaScript(null, url)) {
     contentType = "text/javascript";
-    imports = await getImports(url, source);
+    imports = await getImports(source);
   } else if (isTypeScript(null, url)) {
     contentType = "application/typescript";
-    imports = await getImports(url, source);
+    imports = await getImports(source);
   } else if (isJsx(null, url)) {
     contentType = "text/jsx";
-    imports = await getImportsFromJsx(url, source);
+    imports = await getImportsFromJsx(source);
   } else if (isTsx(null, url)) {
     contentType = "text/tsx";
-    imports = await getImportsFromTsx(url, source);
+    imports = await getImportsFromTsx(source);
   } else if (isCss(null, url)) {
     contentType = "text/css";
   }
@@ -85,13 +81,13 @@ async function getRemoteScript(url: string): Promise<Script> {
   const source = await resp.text();
   let imports = [] as string[];
   if (isJavaScript(contentType, url)) {
-    imports = await getImports(redirectedUrl, source);
+    imports = await getImports(source);
   } else if (isTypeScript(contentType, url)) {
-    imports = await getImports(redirectedUrl, source);
+    imports = await getImports(source);
   } else if (isTsx(contentType, url)) {
-    imports = await getImportsFromTsx(redirectedUrl, source);
+    imports = await getImportsFromTsx(source);
   } else if (isJsx(contentType, url)) {
-    imports = await getImportsFromJsx(redirectedUrl, source);
+    imports = await getImportsFromJsx(source);
   } else if (isCss(contentType, url)) {
     imports = [];
   }
