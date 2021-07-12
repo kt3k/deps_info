@@ -76,7 +76,6 @@ async function getLocalScript(url: string): Promise<Script> {
 async function getRemoteScript(url: string): Promise<Script> {
   console.error(green("Download"), url);
   const resp = await fetch(url);
-  const redirectedUrl = resp.url;
   const contentType = resp.headers.get("content-type") ?? "unknown";
   const source = await resp.text();
   let imports = [] as string[];

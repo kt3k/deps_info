@@ -1,6 +1,12 @@
 import type { Script } from "./types.ts";
 import { ScriptSet, toUrlIfNotUrl } from "./script_set.ts";
 import { gray } from "https://deno.land/std@0.100.0/fmt/colors.ts";
+import { resolve, toFileUrl } from "https://deno.land/std@0.100.0/path/mod.ts";
+import {
+  parse,
+  ParsedImportMap,
+  resolve as resolveImportMap,
+} from "https://esm.sh/@import-maps/resolve@1.0.1";
 
 export type { Script };
 export { ScriptSet, toUrlIfNotUrl };
@@ -10,8 +16,15 @@ const CACHE_ROOT = "./.deps_info_cache";
 export async function getDeps(
   urlOrPath: string,
   cacheRoot = CACHE_ROOT,
+  importMapPath?: string,
 ): Promise<ScriptSet> {
-  const scriptSet = new ScriptSet([], cacheRoot);
+  const parsedImportMap = importMapPath
+    ? parse(
+      JSON.parse(await Deno.readTextFile(importMapPath)),
+      toFileUrl(resolve(importMapPath)),
+    )
+    : undefined;
+  const scriptSet = new ScriptSet([], cacheRoot, parsedImportMap);
   await scriptSet.loadDeps(urlOrPath);
   return scriptSet;
 }
@@ -35,11 +48,15 @@ const EMPTY_CONNECTOR = " ";
 export function printDependencyGraph(
   url: string,
   scriptSet: ScriptSet,
+  parsedImportMap?: ParsedImportMap,
   prefix?: string,
   isLast = true,
   printed: Set<string> = new Set([]),
 ) {
-  const imports = scriptSet.get(url)!.imports;
+  const script = scriptSet.get(url)!;
+  const imports = script.imports;
+  const redirectedUrl = script.redirectedUrl;
+  const baseURL = new URL(redirectedUrl);
   const noDeps = imports.length === 0;
   const seen = printed.has(url);
   const childConnector = (noDeps || seen)
@@ -58,10 +75,17 @@ export function printDependencyGraph(
   printed.add(url);
   let len = imports.length;
   for (const u of imports) {
+    let url: string;
+    if (parsedImportMap) {
+      url = resolveImportMap(u, parsedImportMap, baseURL).resolvedImport.href;
+    } else {
+      url = new URL(u, redirectedUrl).href;
+    }
     len--;
     printDependencyGraph(
-      u,
+      url,
       scriptSet,
+      parsedImportMap,
       prefix === undefined
         ? ""
         : prefix + (isLast ? EMPTY_CONNECTOR : VERTICAL_CONNECTOR) + " ",
